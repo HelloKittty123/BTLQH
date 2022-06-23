@@ -79,7 +79,7 @@ window.onload = function () {
   $("#c-slider").slider({
     min: 0,
     max: 100,
-    start: 12,
+    start: 10,
     step: 1,
     onMove: function (val) {
       $("#c-value").html(val);
@@ -90,7 +90,7 @@ window.onload = function () {
   $("#alpha-slider").slider({
     min: 0,
     max: 1,
-    start: 0.4,
+    start: 0.2,
     step: 0.01,
     onMove: function (val) {
       $("#alpha-value").html(val);
@@ -102,7 +102,7 @@ window.onload = function () {
   $("#umin-slider").slider({
     min: 0,
     max: 1,
-    start: 0.85,
+    start: 0.8,
     step: 0.01,
     onMove: function (val) {
       $("#umin-value").html(val);
@@ -180,25 +180,42 @@ function reload(init) {
   for (let i = 0; i < nodeNumber; i++) {
     for (let j = 0; j < nodeNumber; j++) {
       if (T[i][j] == 0) {
-        if (j === i + 4) {
+        // if (j === i + 4) {
+        //   T[i][j] += 2;
+        //   T[j][i] += 2;
+        // }
+        // if (j === i + 87) {
+        //   T[i][j] += 3;
+        //   T[j][i] += 3;
+        // }
+        // if (j === i + 98) {
+        //   T[i][j] += 4;
+        //   T[j][i] += 4;
+        // }
+
+        if (j === i + 3) {
+          T[i][j] += 1;
+          T[j][i] += 1;
+        }
+        if (j === i + 55) {
           T[i][j] += 2;
           T[j][i] += 2;
         }
-        if (j === i + 87) {
+        if (j === i + 86) {
           T[i][j] += 3;
           T[j][i] += 3;
-        }
-        if (j === i + 98) {
-          T[i][j] += 4;
-          T[j][i] += 4;
         }
       }
     }
   }
 
+  // T[6][27] = 5; T[27][6] = 5;
+  // T[11][75] = 17; T[75][11] = 17;
+  // T[26][47] = 4; T[47][26] = 4;
+
   T[6][27] = 5; T[27][6] = 5;
-  T[11][75] = 17; T[75][11] = 17;
-  T[26][47] = 4; T[47][26] = 4;
+  T[11][45] = 16; T[45][11] = 16;
+  T[59][67] = 18; T[67][59] = 18;
 
   /* Tính trọng số của các nút */
   w = new Array(nodeNumber).fill(0);
@@ -241,14 +258,14 @@ let DIJSKTRA_TRAFFIC_ONLY = $("#dijsktra-traffic-only").prop("checked");
 let HIDE_NO_TRAFFIC = $("#hide-no-traffic").prop("checked");
 let x_matrix = 1000;
 let y_matrix = 1000;
-let nodeNumber = 100;
+let nodeNumber = 90;
 //console.log(nodeNumber);
 let nodes = [];
 let W = 2;
 let R = 0.3;
-let C = 12;
-let alpha = 0.4;
-let u_min = 0.85;
+let C = 10;
+let alpha = 0.2;
+let u_min = 0.8;
 
 const wNumberElement = document.getElementById("number-w");
 wNumberElement.addEventListener("change", (e) => {
@@ -449,10 +466,9 @@ function removeNodeFromBackbone(node, backbone_node) {
   }
 }
 
+/* Mỗi liên kết tính bằng round (0.5x khoảng cách đề các) */
 function calcDistance(node1, node2) {
-  return 0.4*Math.sqrt(
-    Math.pow(node1.x - node2.x, 2) + Math.pow(node1.y - node2.y, 2)
-  );
+  return 0.5*Math.sqrt(Math.pow(node1.x - node2.x, 2) + Math.pow(node1.y - node2.y, 2));
 }
 
 function setup() {
@@ -1179,17 +1195,17 @@ function setup() {
        * VD: Cây: 1 -> 2 -> 3 thì dist(1,3) = dist(1,2) + dist(2, 3)   
        */
       let maxLList = [];
-      maxLList
+      maxLList.push(backbonesDistance[i][j]);
       pair.sList.forEach((ni) => {
         pair.dList.forEach((nj) => {
           if (T_b[ni][nj] > 0 && (ni != i || nj != j)) {
             console.log("ni = " + ni + ", nj = " + nj);
-            // console.log("backbonesDistance(ni, nj) = " + backbonesDistance(ni, nj));
-            // console.log("backbonesDistance(ni, i) = " + backbonesDistance(ni, i));
-            // console.log("backbonesDistance(nj, j) = " + backbonesDistance(nj, j));
+            console.log("backbonesDistance[" + ni + "][" + nj + "] = " + backbonesDistance[ni][nj]);
+            console.log("backbonesDistance[" + ni + "][" + i + "] = " + backbonesDistance[ni][i]);
+            console.log("backbonesDistance[" + nj + "][" + j + "] = " + backbonesDistance[nj][j]);
             let localL = backbonesDistance[ni][nj] - backbonesDistance[ni][i] - backbonesDistance[nj][j];
 
-            // maxLList.push(localL);
+            maxLList.push(localL);
             // maxLList.sort(function(a, b) {
             //   return a - b;
             // });
@@ -1204,26 +1220,30 @@ function setup() {
           }
         });
       });
-      maxLList.push(localL);
+      pair.maxL = max;
+      console.log(max);
       maxLList.sort(function(a, b) {
-        return a - b;
+        return b - a;
       });
       console.log("Max List: " + maxLList);
       if(maxLList.length > 1) {
-        
-      }
-
-      pair.maxL = max;
-      console.log(max);
-      if (max.value > calcDistance(backbones[i], backbones[j])) {
-        if (Math.ceil(max.value) < backbonesDistance[i][j]) {
-          backbonesDistance[i][j] = backbonesDistance[j][i] = Math.ceil(max.value) - 1;
-        } else {
-          backbonesDistance[i][j] = backbonesDistance[j][i] = (max.value + backbonesDistance[i][j]) / 2;
-        }
+        backbonesDistance[i][j] = backbonesDistance[j][i] = Math.floor(Math.floor(Math.random() * (maxLList[0] - (maxLList[1] + 1))) + (maxLList[1] + 1)); 
       } else {
         backbonesDistance[i][j] = backbonesDistance[j][i] = calcDistance(backbones[i], backbones[j]); 
       }
+      console.log("backbonesDistance[" + i + "][" + j + "] = " + backbonesDistance[i][j]);
+
+      pair.maxL = max;
+      console.log(max);
+      // if (max.value > calcDistance(backbones[i], backbones[j])) {
+      //   if (Math.ceil(max.value) < backbonesDistance[i][j]) {
+      //     backbonesDistance[i][j] = backbonesDistance[j][i] = Math.ceil(max.value) - 1;
+      //   } else {
+      //     backbonesDistance[i][j] = backbonesDistance[j][i] = (max.value + backbonesDistance[i][j]) / 2;
+      //   }
+      // } else {
+      //   backbonesDistance[i][j] = backbonesDistance[j][i] = calcDistance(backbones[i], backbones[j]); 
+      // }
     });
 
 
