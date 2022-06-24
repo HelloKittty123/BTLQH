@@ -378,16 +378,16 @@ function setNodes() {
     [514, 742],
     [178, 105],
     [399, 128],
-    [134, 550],
-    [31, 486],
-    [940, 891],
-    [302, 799],
-    [296, 735],
-    [333, 52],
-    [468, 73],
-    [649, 89],
-    [26, 799],
-    [843, 944]
+    // [134, 550],
+    // [31, 486],
+    // [940, 891],
+    // [302, 799],
+    // [296, 735],
+    // [333, 52],
+    // [468, 73],
+    // [649, 89],
+    // [26, 799],
+    // [843, 944]
   ];
   nodes = [];
   for (let i = 0; i < nodeNumber; i++) {
@@ -571,6 +571,7 @@ function setup() {
     let x_numerator = 0,
       y_numerator = 0,
       denominator = 0;
+
     // points.forEach((e) => {
     //   if (e.is_backbone != true) {
     //     // Nút chưa được phân loại và nút truy nhập
@@ -598,6 +599,7 @@ function setup() {
     //     if (e.access === undefined) e.access = [];
     //   }
     // });
+
     let centerNode = {
       x: x_numerator / denominator,
       y: y_numerator / denominator,
