@@ -18,7 +18,9 @@
       type="text/css"
       href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.7.8/semantic.min.css"
     />
+    
     <link href="style.css" rel="stylesheet" />
+    
   </head>
 
   <body>
@@ -198,23 +200,24 @@
             <p class="ui">Danh sách nút backbone</p>
             <div id="backbones" class="fixed-top"></div>
             <p class="ui">Lưu lượng giữa các nút backbone</p>
+            <button class="btn btn-flow">Xuất File Excel</button>
             <div id="backbone-flow"></div>
             <p class="ui">Số đường trên liên kết</p>
             <div id="number-line"></div>
             <p class="ui">Độ sử dụng liên kết</p>
             <div id="usage"></div>
             <p class="ui">Danh sách liên kết</p>
+            <button class="btn btn-linker">Xuất File Excel</button>
             <div id="links"></div>
             <div id="mentor2">
               <p class="ui">Liên kết trực tiếp được thêm</p>
+              <button class="btn btn-direct-link">Xuất File Excel</button>
               <div id="direct-link"></div>
             </div>
           </div>
           <p class="ui">
             Tổng giá: <strong><span id="price"></span></strong>
           </p>
-
-          
         </div>
       </div>
     </div>
@@ -251,6 +254,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.min.js"></script>
     <!-- MathJax Library-->
     <!--<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>-->
+    <!-- Export to Excel -->
+    <script src="./jquery.table2excel.min.js"></script>
+
     <script
       id="MathJax-script"
       async
@@ -263,5 +269,31 @@
     </script>
 
     <script src="script.js"></script>
+
+    <script>
+      $(".btn-linker").click(function(){
+        $("#table-linker").table2excel({
+          name: "Worksheet Name",
+          filename: "List_Linker",
+          fileext: ".xlsx"
+        }) 
+      });
+
+      $(".btn-direct-link").click(function(){
+        $("#table-direct-link").table2excel({
+          name: "Worksheet Name",
+          filename: "List_Direct_Link",
+          fileext: ".xlsx"
+        }) 
+      });
+
+      $(".btn-flow").click(function(){
+        $("#table-flow-backbone").table2excel({
+          name: "Worksheet Name",
+          filename: "Flow_BackBone",
+          fileext: ".xlsx"
+        }) 
+      });
+    </script>
   </body>
 </html>

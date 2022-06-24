@@ -57,6 +57,65 @@ $.fn.extend({
       $("tbody td:nth-child(1)", table).css("left", left);
     });
   },
+
+  printMatrixBackBone: function (config) {
+    let matrix = config.matrix;
+    let hasAxis =
+      config.hasAxis === undefined || typeof config.hasAxis !== "boolean"
+        ? true
+        : config.hasAxis;
+    let title = config.title === undefined ? "" : config.title;
+    if (matrix == undefined) return;
+    let height = config.height === undefined ? "180px" : config.height;
+    let html =
+      '<table class="ui definition unstackable celled table center aligned matrix selectable" id="table-flow-backbone">';
+    if (hasAxis) {
+      html += "<thead><tr><th>" + title + "</th>";
+      numberCol = 0;
+      matrix.forEach((element) => {
+        numberCol = element.length > numberCol ? element.length : numberCol;
+      });
+      //console.log(numberCol)
+      for (let i = 1; i <= numberCol; i++) {
+        html += "<th>" + i + "</th>";
+      }
+      html += "</tr></thead>";
+    }
+    html += "<tbody>";
+    matrix.forEach((element, index) => {
+      html += "<tr>";
+      if (hasAxis) {
+        html += "<td>" + (index + 1) + "</td>";
+      }
+      element.forEach((subElement) => {
+        html += "<td>" + subElement + "</td>";
+      });
+      html += "</tr>";
+    });
+    html += "</tbody></table>";
+    this.html(html);
+    let table = this;
+    var max = 0;
+    $("table td", this).each(function () {
+      max = Math.max($(this).outerWidth(true), max);
+    });
+    $("table th", this).each(function () {
+      max = Math.max($(this).outerWidth(true), max);
+    });
+    $("tbody", this).css("height", height);
+    $("table td", this).css("min-width", max);
+    $("table th", this).css("min-width", max);
+    $("thead th:nth-child(1)", this).css(
+      "min-height",
+      $("thead th:nth-child(2)", this).outerHeight(true)
+    );
+    $("tbody", this).scroll(function (e) {
+      let left = $(this).scrollLeft();
+      $("thead", table).css("left", -left);
+      $("thead th:nth-child(1)", table).css("left", left);
+      $("tbody td:nth-child(1)", table).css("left", left);
+    });
+  },
 });
 
 window.onload = function () {
@@ -833,11 +892,14 @@ function setup() {
   //   }
   // }
 
-  $("#backbone-flow").printMatrix({
+  $("#backbone-flow").printMatrixBackBone({
     title: "T<sub>b</sub>",
     matrix: T_b,
     height: "300px",
   });
+  // var setBackBoneFlow = document.getElementById("#backbone-flow").firstElementChild();
+  // console.log(document.getElementById("#backbone-flow"))
+  // console.log(setBackBoneFlow);
 
   // 3. MENTOR
   // 3.1. Tìm nút backbone trung tâm
@@ -1448,7 +1510,7 @@ function setup() {
 
     // In bảng liên kết trực tiếp
     let htmlDirectLinkTable =
-      '<table class="ui celled table center aligned unstackable selectable"><thead><tr>';
+      '<table class="ui celled table center aligned unstackable selectable" id = "table-direct-link"><thead><tr>';
     // htmlDirectLinkTable +=
     //   "<th>Nút đầu</th><th>Nút cuối</th><th>Khoảng cách</th><th>maxL</th><th>Chiều dài cũ theo cây</th>";
     htmlDirectLinkTable +=
@@ -1504,7 +1566,7 @@ function setup() {
 
   // In danh sách liên kết
   let htmlLinkTable =
-    '<table class="ui celled table center aligned unstackable selectable"><thead><tr>';
+    '<table class="ui celled table center aligned unstackable selectable" id = "table-linker"><thead><tr>';
   htmlLinkTable +=
     "<th>Nút đầu</th><th>Nút cuối</th><th>Lưu lượng</th><th>Số đường</th>";
   htmlLinkTable += "<th>Độ sử dụng</th><th>Khoảng cách</th><th>Giá</th>";
@@ -1602,4 +1664,20 @@ function setup() {
   $(".ui.sticky").sticky({
     offset: 50,
   });
+
+  // $(".btn-linker").click(function(){
+  //   $("#table-linker").table2excel({
+  //     name: "Worksheet Name",
+  //     filename: "List_Linker",
+  //     fileext: ".xlsx"
+  //   }) 
+  // });
+
+  // $(".btn-direct-link").click(function(){
+  //   $("#table-direct-link").table2excel({
+  //     name: "Worksheet Name",
+  //     filename: "List_Direct_Link",
+  //     fileext: ".xlsx"
+  //   }) 
+  // });
 }
