@@ -1304,7 +1304,7 @@ function setup() {
       });
       console.log("Max List: " + maxLList);
       if(maxLList.length > 1) {
-        backbonesDistance[i][j] = backbonesDistance[j][i] = Math.floor(Math.floor(Math.random() * (maxLList[0] - (maxLList[1] + 1))) + (maxLList[1] + 1)); 
+        backbonesDistance[i][j] = backbonesDistance[j][i] = Math.random() * (maxLList[0] - maxLList[1]) + maxLList[1]; 
       } else {
         backbonesDistance[i][j] = backbonesDistance[j][i] = calcDistance(backbones[i], backbones[j]); 
       }
@@ -1449,8 +1449,10 @@ function setup() {
     // In bảng liên kết trực tiếp
     let htmlDirectLinkTable =
       '<table class="ui celled table center aligned unstackable selectable"><thead><tr>';
+    // htmlDirectLinkTable +=
+    //   "<th>Nút đầu</th><th>Nút cuối</th><th>Khoảng cách</th><th>maxL</th><th>Chiều dài cũ theo cây</th>";
     htmlDirectLinkTable +=
-      "<th>Nút đầu</th><th>Nút cuối</th><th>Khoảng cách</th><th>maxL</th><th>Chiều dài cũ theo cây</th>";
+      "<th>Nút đầu</th><th>Nút cuối</th><th>Khoảng cách</th><th>Chiều dài cũ theo cây</th>";
     htmlDirectLinkTable +=
       "<th>Độ dài liên kết trực tiếp</th><th>Số đường</th><th>Giá</th>";
     htmlDirectLinkTable += "</tr></thead><tbody>";
@@ -1462,7 +1464,7 @@ function setup() {
           "<td>" +
           calcDistance(backbones[pair.start], backbones[pair.stop]).toFixed(2) +
           "</td>";
-        htmlDirectLinkTable += "<td>" + pair.maxL.value.toFixed(2) + "</td>";
+        // htmlDirectLinkTable += "<td>" + pair.maxL.value.toFixed(2) + "</td>";
         htmlDirectLinkTable += "<td>" + pair.distance.toFixed(2) + "</td>";
         htmlDirectLinkTable +=
           "<td>" + links[pair.start][pair.stop].d.toFixed(2) + "</td>";
