@@ -378,16 +378,16 @@ function setNodes() {
     [514, 742],
     [178, 105],
     [399, 128],
-    // [134, 550],
-    // [31, 486],
-    // [940, 891],
-    // [302, 799],
-    // [296, 735],
-    // [333, 52],
-    // [468, 73],
-    // [649, 89],
-    // [26, 799],
-    // [843, 944]
+    [134, 550],
+    [31, 486],
+    [940, 891],
+    [302, 799],
+    [296, 735],
+    [333, 52],
+    [468, 73],
+    [649, 89],
+    [26, 799],
+    [843, 944]
   ];
   nodes = [];
   for (let i = 0; i < nodeNumber; i++) {
@@ -468,7 +468,7 @@ function removeNodeFromBackbone(node, backbone_node) {
 
 /* Mỗi liên kết tính bằng round (0.5x khoảng cách đề các) */
 function calcDistance(node1, node2) {
-  return 0.5*Math.sqrt(Math.pow(node1.x - node2.x, 2) + Math.pow(node1.y - node2.y, 2));
+  return 0.5 * Math.sqrt(Math.pow(node1.x - node2.x, 2) + Math.pow(node1.y - node2.y, 2));
 }
 
 function setup() {
@@ -547,6 +547,7 @@ function setup() {
     }
   }
   let R_backbone = R * max_distance.distance;
+  console.log("maxDistance = " + max_distance.distance + " - R = " +  R_backbone);
   if (DRAW_MAX_DISTANCE) {
     lineNode(max_distance.node1, max_distance.node2, color(255, 0, 0));
   }
@@ -571,6 +572,51 @@ function setup() {
     let x_numerator = 0,
       y_numerator = 0,
       denominator = 0;
+
+    backbones.forEach(function (b) {
+      points.forEach(function (e) {
+        if(e.is_backbone != true) {
+          if(e.classified != true) {
+            if (isNodeInBackboneCircle(e, b, R_backbone)) {
+              // Nếu nút cần kiểm tra nằm trong nút backbone b
+              e.is_access = true; // Chuyển thành nút truy nhập
+              e.is_backbone = false;
+              e.classified = true;
+              e.backbone_distance = calcDistance(e, b);
+              // let localDistance = calcDistance(e, b); // Tính khoảng cách giữa nút này và nút backbone
+              if (b.access === undefined) b.access = [];
+              b.access.push(e); // Thêm nút vào nút đầu cuối của nút backbone
+              e.backbone = b; // Thêm nút backbone cho node              
+            }
+          }
+        } else {
+          if (e.access === undefined) e.access = [];
+        }
+      });
+    });
+
+    // points.forEach((e) => {
+    //   if (e.is_backbone !== true) {
+    //     if(e.classified !== true) {
+    //       // Nút chưa được phân loại và nút truy nhập
+    //       backbones.forEach(function (b) {
+    //         if (isNodeInBackboneCircle(e, b, R_backbone)) {
+    //           // Nếu nút cần kiểm tra nằm trong nút backbone b
+    //           e.is_access = true; // Chuyển thành nút truy nhập
+    //           e.is_backbone = false;
+    //           e.classified = true;
+    //           e.backbone_distance = calcDistance(e, b);
+    //           // let localDistance = calcDistance(e, b); // Tính khoảng cách giữa nút này và nút backbone
+    //           if (b.access === undefined) b.access = [];
+    //           b.access.push(e); // Thêm nút vào nút đầu cuối của nút backbone
+    //           e.backbone = b; // Thêm nút backbone cho node              
+    //         }
+    //       });
+    //     }
+    //   } else {
+    //     if (e.access === undefined) e.access = [];
+    //   }
+    // });
 
     // points.forEach((e) => {
     //   if (e.is_backbone != true) {
@@ -616,7 +662,7 @@ function setup() {
         denominator += e.w;
       }
     });
-    console.log(x_numerator + " " + y_numerator + " " + denominator);
+    // console.log(x_numerator + " " + y_numerator + " " + denominator);
     centerNode.x = x_numerator / denominator;
     centerNode.y = y_numerator / denominator;
 
@@ -658,32 +704,58 @@ function setup() {
     points[index_at_merit_max].is_backbone = true;
     points[index_at_merit_max].classified = true;
 
-    points.forEach((e) => {
-      if (e.is_backbone != true) {
-        if(e.classified != true) {
+    // points.forEach((e) => {
+    //   if (e.is_backbone != true) {
+    //     if(e.classified != true) {
+    //       // Nút chưa được phân loại và nút truy nhập
+    //       backbones.forEach(function (b) {
+    //         if (isNodeInBackboneCircle(e, b, R_backbone)) {
+    //           // Nếu nút cần kiểm tra nằm trong nút backbone b
+    //           e.is_access = true; // Chuyển thành nút truy nhập
+    //           e.is_backbone = false;
+    //           e.classified = true;
+    //           e.backbone_distance = calcDistance(e, b);
+    //           let localDistance = calcDistance(e, b); // Tính khoảng cách giữa nút này và nút backbone
+    //           if (b.access === undefined) b.access = [];
+    //           b.access.push(e); // Thêm nút vào nút đầu cuối của nút backbone
+    //           e.backbone = b; // Thêm nút backbone cho node              
+    //         }
+    //       });
+    //     }
+    //   } else {
+    //     if (e.access === undefined) e.access = [];
+    //   }
+    // });
 
-          // Nút chưa được phân loại và nút truy nhập
-          backbones.forEach(function (b) {
-            if (isNodeInBackboneCircle(e, b, R_backbone)) {
-              // Nếu nút cần kiểm tra nằm trong nút backbone b
-              e.is_access = true; // Chuyển thành nút truy nhập
-              e.is_backbone = false;
-              e.classified = true;
-              e.backbone_distance = calcDistance(e, b);
-              let localDistance = calcDistance(e, b); // Tính khoảng cách giữa nút này và nút backbone
-              if (b.access === undefined) b.access = [];
-              b.access.push(e);
-              e.backbone = b; // Nếu khoảng cách mới nhỏ hơn khoảng cách cũ thì nút truy nhập sẽ thuộc cây backbone mới
-              e.backbone_distance = localDistance;
-              
-            }
-          });
-        }
-      } else {
-        if (e.access === undefined) e.access = [];
-      }
-    });
-
+    // points.forEach((e) => {
+    //   if (e.is_backbone != true) {
+    //     // Nút chưa được phân loại và nút truy nhập
+    //     backbones.forEach(function (b) {
+    //       if (isNodeInBackboneCircle(e, b, R_backbone)) {
+    //         // Nếu nút cần kiểm tra nằm trong nút backbone b
+    //         e.is_access = true; // Chuyển thành nút truy nhập
+    //         e.is_backbone = false;
+    //         e.classified = true;
+    //         let localDistance = calcDistance(e, b); // Tính khoảng cách giữa nút này và nút backbone
+    //         /* Kiểm tra xem đã có khoảng cách giữa node này với node backbone chưa và khoảng cách mới có nhỏ hơn khoảng cách cũ không
+    //           nếu nhỏ hơn thì cập nhật lại nút backbone và khoảng cách
+    //         */
+    //         if (e.backbone_distance === undefined || e.backbone_distance > localDistance) {
+    //           /* Nếu node này đã thuộc backbone rồi thì remove */
+    //           if (e.backbone !== undefined)
+    //             removeNodeFromBackbone(e, e.backbone);
+    //             /* Nếu nút backbone chưa có nút đầu cuối nào thì khởi tạo */
+    //           if (b.access === undefined) b.access = [];
+    //           b.access.push(e);
+    //           e.backbone = b; // Nếu khoảng cách mới nhỏ hơn khoảng cách cũ thì nút truy nhập sẽ thuộc cây backbone mới
+    //           e.backbone_distance = localDistance;
+    //         }
+    //       }
+    //     });
+    //   } else {
+    //     if (e.access === undefined) e.access = [];
+    //   }
+    // });
 
     // drawBackboneNode(points[index_at_merit_max]);
     if (DRAW_BACKBONE_CIRCE)
@@ -1004,9 +1076,9 @@ function setup() {
       console.log("Soucre: " + e.s + " Dest: " + e.d + " Hop = " + e.hop + " n= " + n + " u = " + u);
       if (e.hop >= 2 && T_b[e.s][e.d] > 0) {
         /* Thêm liên kết trực tiếp */
-        if (u >= u_min) {
+        if (u > u_min) {
           console.log("Thêm liên kết trực tiếp");
-          lineNode(backbones[e.s], backbones[e.d], color(111, 255, 0));
+          lineNode(backbones[e.s], backbones[e.d], color(255, 0, 111));
           links[e.s][e.d] = links[e.d][e.s] = {
             n: n,
             u: u,
@@ -1016,7 +1088,6 @@ function setup() {
         } 
         /* Chuyển lưu lượng */
         else {
-          console.log("Chuyển lưu lượng");
           let minDist = {
             dist: Infinity,
           };
@@ -1025,6 +1096,7 @@ function setup() {
             let currentBackboneIndex = path[e.s][e.d][i];
             let localDist = calcDistance(backbones[e.s], backbones[currentBackboneIndex]) +
                             calcDistance(backbones[e.d], backbones[currentBackboneIndex]);
+            console.log("Cost " + path[e.s][e.d][i] + " = " + localDist);
             if (localDist < minDist.dist) {
               minDist = {
                 dist: localDist,
@@ -1032,6 +1104,7 @@ function setup() {
               };
             }
           }
+          console.log("Chuyển lưu lượng về Home: " + minDist.backboneIndex);
           /* Cập nhật lại lưu lượng */
           T_b[e.s][minDist.backboneIndex] = T_b[minDist.backboneIndex][e.s] =
             T_b[e.s][minDist.backboneIndex] + T_b[e.s][e.d];
@@ -1096,7 +1169,7 @@ function setup() {
       console.log("Soucre: " + e.s + " Dest: " + e.d + " Hop = " + e.hop + " n= " + n + " u = " + u);
       if (e.hop >= 2 && T_b[e.s][e.d] > 0) {
         /* Thêm liên kết trực tiếp */
-        if (u >= u_min) {
+        if (u > u_min) {
           console.log("Thêm liên kết trực tiếp");
           lineNode(backbones[e.s], backbones[e.d], color(111, 255, 0));
           links[e.s][e.d] = links[e.d][e.s] = {
@@ -1120,7 +1193,6 @@ function setup() {
         } 
         /* Chuyển lưu lượng */
         else {
-          console.log("Chuyển lưu lượng");
           let minDist = {
             dist: Infinity,
           };
@@ -1129,6 +1201,7 @@ function setup() {
             let currentBackboneIndex = path[e.s][e.d][i];
             let localDist = calcDistance(backbones[e.s], backbones[currentBackboneIndex]) +
                             calcDistance(backbones[e.d], backbones[currentBackboneIndex]);
+            console.log("Cost " + path[e.s][e.d][i] + " = " + localDist);
             if (localDist < minDist.dist) {
               minDist = {
                 dist: localDist,
@@ -1136,6 +1209,7 @@ function setup() {
               };
             }
           }
+          console.log("Chuyển lưu lượng về Home: " + minDist.backboneIndex);
           /* Cập nhật lại lưu lượng */
           T_b[e.s][minDist.backboneIndex] = T_b[minDist.backboneIndex][e.s] =
             T_b[e.s][minDist.backboneIndex] + T_b[e.s][e.d];
@@ -1200,7 +1274,8 @@ function setup() {
       maxLList.push(backbonesDistance[i][j]);
       pair.sList.forEach((ni) => {
         pair.dList.forEach((nj) => {
-          if (T_b[ni][nj] > 0 && (ni != i || nj != j)) {
+          // if (T_b[ni][nj] > 0 && (ni != i || nj != j))
+          if (ni != i || nj != j) {
             console.log("ni = " + ni + ", nj = " + nj);
             console.log("backbonesDistance[" + ni + "][" + nj + "] = " + backbonesDistance[ni][nj]);
             console.log("backbonesDistance[" + ni + "][" + i + "] = " + backbonesDistance[ni][i]);
